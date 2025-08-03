@@ -3,7 +3,7 @@ import { User } from "../models/User.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateToken } from "../utils/generateToken.js";
-import { sendVerificationEmail } from "../utils/sendEmail.js";
+import { sendVerificationEmail } from "../email/sendEmail.js";
 
 export const register = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -30,8 +30,9 @@ export const register = async (req, res, next) => {
             success: true,
             message: "user created successfully",
             data: {
-                ...createdUser._doc,
-                password: undefined,
+                _id: createdUser._id,
+                name,
+                email,
             },
         });
     } catch (error) {

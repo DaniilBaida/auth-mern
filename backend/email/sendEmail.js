@@ -1,5 +1,5 @@
 import { mailtrapClient, sender } from "../config/mailtrap.js";
-import { VERIFY_ACCOUNT_EMAIL } from "../email/emailTemplates.js";
+import { VERIFY_ACCOUNT_EMAIL } from "./emailTemplates.js";
 
 export const sendVerificationEmail = async (user) => {
     try {
