@@ -1,8 +1,9 @@
-import { createError } from "../utils/createError";
-import { User } from "../models/User";
-import { hashPassword } from "../utils/hashPassword";
-import { generateVerificationCode } from "../utils/generateVerificationCode";
-import { generateToken } from "../utils/generateToken";
+import { createError } from "../utils/createError.js";
+import { User } from "../models/User.js";
+import { hashPassword } from "../utils/hashPassword.js";
+import { generateVerificationCode } from "../utils/generateVerificationCode.js";
+import { generateToken } from "../utils/generateToken.js";
+import { sendVerificationEmail } from "../utils/sendEmail.js";
 
 export const register = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -22,6 +23,8 @@ export const register = async (req, res, next) => {
         });
 
         generateToken(res, createdUser._id);
+
+        sendVerificationEmail(createdUser);
 
         res.status(201).json({
             success: true,

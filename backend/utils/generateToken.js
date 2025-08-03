@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET, NODE_ENV } from "../config/env";
+import { JWT_SECRET, NODE_ENV } from "../config/env.js";
 
 const JWT_EXPIRES_IN = "7d";
 //Generates a JWT Token and sets it in cookies
