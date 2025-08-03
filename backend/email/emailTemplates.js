@@ -1,4 +1,6 @@
-export const VERIFY_ACCOUNT_EMAIL = `
+export const VERIFY_ACCOUNT_EMAIL = {
+    subject: "Verify your email!",
+    html: `
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
   <table align="center" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 40px 0;">
     <tr>
@@ -31,4 +33,5 @@ export const VERIFY_ACCOUNT_EMAIL = `
   </table>
 </body>
 </html>
-`;
+`,
+};

@@ -7,21 +7,19 @@ export const sendVerificationEmail = async (user) => {
 
         if (!token) throw new Error("Verification token is missing.");
 
-        const email = user.email;
-
         await mailtrapClient.send({
             from: sender,
-            to: [{ email }],
-            subject: "Verify your account!",
-            html: VERIFY_ACCOUNT_EMAIL.replace(
-                "{verificationCode}",
-                user.verification.token
-            ).replace("{userName}", user.name),
+            to: [{ email: user.email }],
+            subject: VERIFY_ACCOUNT_EMAIL.subject,
+            html: VERIFY_ACCOUNT_EMAIL.html
+                .replace("{verificationCode}", user.verification.token)
+                .replace("{userName}", user.name),
             category: "email verification",
         });
 
         console.log("Verification email sent to: ", user.email);
     } catch (error) {
         console.error("Failed to send verification email:", error.message);
+        throw error;
     }
 };
