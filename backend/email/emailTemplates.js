@@ -35,3 +35,45 @@ export const VERIFY_ACCOUNT_EMAIL = {
 </html>
 `,
 };
+
+export const WELCOME_EMAIL = {
+    subject: "Welcome to Our Community!",
+    html: `
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+  <table align="center" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+          <tr>
+            <td style="padding: 30px; text-align: center; background-color: #6c5ce7; color: #ffffff;">
+              <h1 style="margin: 0; font-size: 24px;">Welcome to the Family!</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px; text-align: left;">
+              <p style="font-size: 16px; color: #333;">Hi <strong>{userName}</strong>,</p>
+              <p style="font-size: 16px; color: #333;">
+                We're thrilled to have you on board. Your account has been successfully created, and you're all set to start using our platform.
+              </p>
+              <p style="font-size: 16px; color: #333;">
+                Here's what you can do next:
+              </p>
+              <ul style="font-size: 16px; color: #333; padding-left: 20px;">
+                <li>📧 Verify your email (if not yet done)</li>
+              </ul>
+              <p style="font-size: 14px; color: #555;">
+                If you have any questions, feel free to reach out. We're here to help!
+              </p>
+              <p style="font-size: 14px; color: #555;">
+                Welcome aboard,<br>The Team
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`,
+};

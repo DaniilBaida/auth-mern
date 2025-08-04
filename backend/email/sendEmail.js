@@ -1,12 +1,11 @@
 import { mailtrapClient, sender } from "../config/mailtrap.js";
-import { VERIFY_ACCOUNT_EMAIL } from "./emailTemplates.js";
+import { VERIFY_ACCOUNT_EMAIL, WELCOME_EMAIL } from "./emailTemplates.js";
 
 export const sendVerificationEmail = async (user) => {
     try {
         const verificationCode = user?.verification?.code;
 
-        if (!verificationCode)
-            throw new Error("Verification token is missing.");
+        if (!verificationCode) throw new Error("Verification code is missing.");
 
         await mailtrapClient.send({
             from: sender,
@@ -21,6 +20,22 @@ export const sendVerificationEmail = async (user) => {
         console.log("Verification email sent to: ", user.email);
     } catch (error) {
         console.error("Failed to send verification email:", error.message);
+        throw error;
+    }
+};
+export const sendWelcomeEmail = async (user) => {
+    try {
+        await mailtrapClient.send({
+            from: sender,
+            to: [{ email: user.email }],
+            subject: WELCOME_EMAIL.subject,
+            html: WELCOME_EMAIL.html.replace("{userName}", user.name),
+            category: "welcome email",
+        });
+
+        console.log("Welcome email sent to: ", user.email);
+    } catch (error) {
+        console.error("Failed to send welcome email:", error.message);
         throw error;
     }
 };

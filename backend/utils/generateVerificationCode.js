@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 //Generates a random code based on the provided characters and length
-export function generateVerificationCode(length = 6) {
+export const generateVerificationCode = (length = 6) => {
     const chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let code = "";
@@ -13,4 +13,4 @@ export function generateVerificationCode(length = 6) {
         code,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours in ms
     };
-}
+};

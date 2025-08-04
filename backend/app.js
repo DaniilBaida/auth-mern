@@ -5,12 +5,14 @@ import authRouter from "./routes/auth.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
-app.use(errorHandler);
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
 
-app.listen(PORT || 3000, async () => {
-    await connectDB();
+app.use(errorHandler);
+
+await connectDB();
+
+app.listen(PORT || 3000, () => {
     console.log(`Listening on http://localhost:${PORT || 3000}`);
 });

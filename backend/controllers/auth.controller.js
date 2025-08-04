@@ -1,9 +1,9 @@
-import { createError } from "../utils/createError.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../email/sendEmail.js";
 import { User } from "../models/User.js";
-import { hashPassword } from "../utils/hashPassword.js";
-import { generateVerificationCode } from "../utils/generateVerificationCode.js";
+import { createError } from "../utils/createError.js";
 import { generateToken } from "../utils/generateToken.js";
-import { sendVerificationEmail } from "../email/sendEmail.js";
+import { generateVerificationCode } from "../utils/generateVerificationCode.js";
+import { hashPassword } from "../utils/hashPassword.js";
 
 export const register = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -47,6 +47,34 @@ export const login = async (req, res, next) => {
 };
 export const logout = async (req, res, next) => {
     try {
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const verifyEmail = async (req, res, next) => {
+    const { code } = req.body;
+    try {
+        if (!code) throw createError("Verification code is required");
+
+        const userToVerify = await User.findOne({
+            "verification.code": code,
+            "verification.expiresAt": { $gt: Date.now() },
+        });
+
+        if (!userToVerify) throw createError("Verification code is invalid");
+
+        userToVerify.isVerified = true;
+        userToVerify.verification = undefined;
+        await userToVerify.save();
+
+        await sendWelcomeEmail(userToVerify);
+
+        res.status(200).json({
+            success: true,
+            message: "User verified successfully",
+            data: { id: userToVerify._id, email: userToVerify.email },
+        });
     } catch (error) {
         next(error);
     }
