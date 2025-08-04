@@ -10,7 +10,7 @@ export function generateVerificationCode(length = 6) {
         code += chars[randomIndex];
     }
     return {
-        token: code,
+        code,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours in ms
     };
 }

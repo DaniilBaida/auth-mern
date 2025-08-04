@@ -3,16 +3,17 @@ import { VERIFY_ACCOUNT_EMAIL } from "./emailTemplates.js";
 
 export const sendVerificationEmail = async (user) => {
     try {
-        const token = user?.verification?.token;
+        const verificationCode = user?.verification?.code;
 
-        if (!token) throw new Error("Verification token is missing.");
+        if (!verificationCode)
+            throw new Error("Verification token is missing.");
 
         await mailtrapClient.send({
             from: sender,
             to: [{ email: user.email }],
             subject: VERIFY_ACCOUNT_EMAIL.subject,
             html: VERIFY_ACCOUNT_EMAIL.html
-                .replace("{verificationCode}", user.verification.token)
+                .replace("{verificationCode}", verificationCode)
                 .replace("{userName}", user.name),
             category: "email verification",
         });

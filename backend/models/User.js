@@ -29,7 +29,7 @@ const userSchema = new Schema(
             expiresAt: Date,
         },
         verification: {
-            token: String,
+            code: String,
             expiresAt: Date,
         },
     },
