@@ -36,6 +36,7 @@ export const register = async (req, res, next) => {
             },
         });
     } catch (error) {
+        console.log(`[Auth.register] Failed to register: ${error.message}`);
         next(error);
     }
 };
@@ -47,7 +48,13 @@ export const login = async (req, res, next) => {
 };
 export const logout = async (req, res, next) => {
     try {
+        res.clearCookie("token");
+        res.status(200).json({
+            success: true,
+            message: "Token cookie cleared successfully",
+        });
     } catch (error) {
+        console.log(`[Auth.logout] Failed to logout: ${error.message}`);
         next(error);
     }
 };
@@ -76,6 +83,9 @@ export const verifyEmail = async (req, res, next) => {
             data: { id: userToVerify._id, email: userToVerify.email },
         });
     } catch (error) {
+        console.log(
+            `[Auth.verifyEmail] Failed to verify email: ${error.message}`
+        );
         next(error);
     }
 };
