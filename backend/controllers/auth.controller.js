@@ -3,7 +3,8 @@ import { User } from "../models/User.js";
 import { createError } from "../utils/createError.js";
 import { generateToken } from "../utils/generateToken.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
-import { hashPassword } from "../utils/hashPassword.js";
+import { hashPassword } from "../utils/password.js";
+import { setCookie } from "../utils/setCookie.js";
 
 export const register = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -22,7 +23,8 @@ export const register = async (req, res, next) => {
             verification: generateVerificationCode(),
         });
 
-        generateToken(res, createdUser._id);
+        const token = generateToken(createdUser._id);
+        setCookie(res, "token", token);
 
         sendVerificationEmail(createdUser);
 
