@@ -1,5 +1,6 @@
 import {
     sendResetPasswordEmail,
+    sendResetPasswordSuccessEmail,
     sendVerificationEmail,
     sendWelcomeEmail,
 } from "../email/sendEmail.js";
@@ -207,6 +208,8 @@ export const resetPassword = async (req, res, next) => {
         user.password = await hashPassword(newPassword);
         user.resetPassword = undefined;
         await user.save();
+
+        await sendResetPasswordSuccessEmail(user);
 
         res.status(200).json({
             success: true,

@@ -118,3 +118,38 @@ export const PASSWORD_RESET_EMAIL = {
 </html>
 `,
 };
+
+export const PASSWORD_RESET_SUCCESS_EMAIL = {
+    subject: "Your Password Has Been Reset Successfully",
+    html: `
+  <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+    <table align="center" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 40px 0;">
+      <tr>
+        <td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+            <tr>
+              <td style="padding: 30px; text-align: center; background-color: #00b894; color: #ffffff;">
+                <h1 style="margin: 0; font-size: 24px;">Password Changed</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 30px; text-align: left;">
+                <p style="font-size: 16px; color: #333;">Hi <strong>{userName}</strong>,</p>
+                <p style="font-size: 16px; color: #333;">
+                  Your password has been reset successfully. If this was you, no further action is required.
+                </p>
+                <p style="font-size: 14px; color: #555;">
+                  If you didn't perform this action, please reset your password immediately or contact our support team.
+                </p>
+                <p style="font-size: 14px; color: #555;">
+                  Best regards,<br>The Team
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+  `,
+};

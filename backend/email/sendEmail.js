@@ -2,6 +2,7 @@ import { FRONTEND_URL } from "../config/env.js";
 import { nodemailerTransporter, sender } from "../config/nodemailer.js";
 import {
     PASSWORD_RESET_EMAIL,
+    PASSWORD_RESET_SUCCESS_EMAIL,
     VERIFY_ACCOUNT_EMAIL,
     WELCOME_EMAIL,
 } from "./emailTemplates.js";
@@ -60,6 +61,28 @@ export const sendResetPasswordEmail = async (user, token) => {
         console.log("Reset password email sent to: ", user.email);
     } catch (error) {
         console.error("Failed to send Reset password email:", error.message);
+        throw error;
+    }
+};
+
+export const sendResetPasswordSuccessEmail = async (user) => {
+    try {
+        await nodemailerTransporter.sendMail({
+            from: sender,
+            to: user.email,
+            subject: PASSWORD_RESET_SUCCESS_EMAIL.subject,
+            html: PASSWORD_RESET_SUCCESS_EMAIL.html.replace(
+                "{userName}",
+                user.name
+            ),
+        });
+
+        console.log("Reset password success email sent to: ", user.email);
+    } catch (error) {
+        console.error(
+            "Failed to send Reset password success email:",
+            error.message
+        );
         throw error;
     }
 };
