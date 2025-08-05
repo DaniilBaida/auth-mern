@@ -3,7 +3,7 @@ import { User } from "../models/User.js";
 import { createError } from "../utils/createError.js";
 import { generateToken } from "../utils/generateToken.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
-import { hashPassword } from "../utils/password.js";
+import { comparePassword, hashPassword } from "../utils/password.js";
 import { setCookie } from "../utils/setCookie.js";
 
 export const register = async (req, res, next) => {
@@ -32,7 +32,7 @@ export const register = async (req, res, next) => {
             success: true,
             message: "user created successfully",
             data: {
-                _id: createdUser._id,
+                id: createdUser._id,
                 name,
                 email,
             },
@@ -43,8 +43,37 @@ export const register = async (req, res, next) => {
     }
 };
 export const login = async (req, res, next) => {
+    const { email, password } = req.body;
     try {
+        if (!email || !password)
+            throw createError("All fields are required", 400);
+
+        const userToLogin = await User.findOne({ email });
+        if (!userToLogin) throw createError("Invalid credentials", 401);
+
+        const isPasswordValid = await comparePassword(
+            password,
+            userToLogin.password
+        );
+
+        if (!isPasswordValid) createError("Invalid credentials", 401);
+
+        let token = generateToken(userToLogin._id);
+        setCookie(res, "token", token);
+
+        res.status(200).json({
+            success: true,
+            message: "User logged in successfully",
+            data: {
+                id: userToLogin._id,
+                name: userToLogin.name,
+                email,
+                isVerified: userToLogin.isVerified,
+                lastLogin: userToLogin.lastLogin,
+            },
+        });
     } catch (error) {
+        console.log(`[Auth.login] Failed to login: ${error.message}`);
         next(error);
     }
 };
