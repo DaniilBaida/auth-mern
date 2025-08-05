@@ -15,6 +15,32 @@ import { comparePassword, hashPassword, hashToken } from "../utils/hash.js";
 import { setCookie } from "../utils/setCookie.js";
 import { devLog } from "../utils/logs.js";
 
+export const getCurrentUser = async (req, res, next) => {
+    const { userId } = req;
+    try {
+        if (!userId)
+            throw createError("Unauthorized: user not authenticated", 401);
+
+        const user = await User.findById(userId);
+        if (!user) throw createError("Unauthorized: user not found", 401);
+
+        res.status(200).json({
+            success: true,
+            message: "Authenticated user retrieved successfully",
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isVerified: user.isVerified,
+                lastLogin: user.lastLogin,
+            },
+        });
+    } catch (error) {
+        devLog(`[Auth.getCurrentUser] ${error.message}`);
+        next(error);
+    }
+};
+
 export const register = async (req, res, next) => {
     const { name, email, password } = req.body;
     try {
@@ -51,7 +77,7 @@ export const register = async (req, res, next) => {
             },
         });
     } catch (error) {
-        console.log(`[Auth.register] ${error.message}`);
+        devLog(`[Auth.register] ${error.message}`);
         next(error);
     }
 };
@@ -87,7 +113,7 @@ export const login = async (req, res, next) => {
             },
         });
     } catch (error) {
-        console.log(`[Auth.login] ${error.message}`);
+        devLog(`[Auth.login] ${error.message}`);
         next(error);
     }
 };
@@ -100,7 +126,7 @@ export const logout = async (req, res, next) => {
             message: "User logged out",
         });
     } catch (error) {
-        console.log(`[Auth.logout] ${error.message}`);
+        devLog(`[Auth.logout] ${error.message}`);
         next(error);
     }
 };
@@ -126,7 +152,7 @@ export const sendEmailVerificationLink = async (req, res, next) => {
             message: "Verification email sent",
         });
     } catch (error) {
-        console.log(`[Auth.sendEmailVerificationLink] ${error.message}`);
+        devLog(`[Auth.sendEmailVerificationLink] ${error.message}`);
         next(error);
     }
 };
@@ -155,7 +181,7 @@ export const verifyEmail = async (req, res, next) => {
             message: "Email verified successfully",
         });
     } catch (error) {
-        console.log(`[Auth.verifyEmail] ${error.message}`);
+        devLog(`[Auth.verifyEmail] ${error.message}`);
         next(error);
     }
 };
@@ -185,7 +211,7 @@ export const sendPasswordResetLink = async (req, res, next) => {
             message: "Password reset email sent",
         });
     } catch (error) {
-        console.log(`[Auth.sendPasswordResetLink] ${error.message}`);
+        devLog(`[Auth.sendPasswordResetLink] ${error.message}`);
         next(error);
     }
 };
@@ -216,7 +242,7 @@ export const resetPassword = async (req, res, next) => {
             message: "Password reset successfully",
         });
     } catch (error) {
-        console.log(`[Auth.resetPassword] ${error.message}`);
+        devLog(`[Auth.resetPassword] ${error.message}`);
         next(error);
     }
 };
