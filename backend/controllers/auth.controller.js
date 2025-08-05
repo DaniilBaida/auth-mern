@@ -1,10 +1,19 @@
-import { sendVerificationEmail, sendWelcomeEmail } from "../email/sendEmail.js";
+import {
+    sendResetPasswordEmail,
+    sendVerificationEmail,
+    sendWelcomeEmail,
+} from "../email/sendEmail.js";
 import { User } from "../models/User.js";
 import { createError } from "../utils/createError.js";
-import { generateToken } from "../utils/generateToken.js";
-import { generateVerificationCode } from "../utils/generateVerificationCode.js";
-import { comparePassword, hashPassword } from "../utils/password.js";
+import {
+    generateAccessToken,
+    generateResetToken,
+    generateVerificationCode,
+    verifyToken,
+} from "../utils/auth.js";
+import { comparePassword, hashPassword, hashToken } from "../utils/hash.js";
 import { setCookie } from "../utils/setCookie.js";
+import { NODE_ENV } from "../config/env.js";
 
 export const register = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -23,10 +32,10 @@ export const register = async (req, res, next) => {
             verification: generateVerificationCode(),
         });
 
-        const token = generateToken(createdUser._id);
+        const token = generateAccessToken(createdUser._id);
         setCookie(res, "token", token);
 
-        sendVerificationEmail(createdUser);
+        // sendVerificationEmail(createdUser);
 
         res.status(201).json({
             success: true,
@@ -58,7 +67,7 @@ export const login = async (req, res, next) => {
 
         if (!isPasswordValid) throw createError("Invalid credentials", 401);
 
-        let token = generateToken(foundUser._id);
+        let token = generateAccessToken(foundUser._id);
         setCookie(res, "token", token);
 
         res.status(200).json({
@@ -90,6 +99,36 @@ export const logout = async (req, res, next) => {
     }
 };
 
+export const sendEmailVerificationLink = async (req, res, next) => {
+    const { email } = req.body;
+    try {
+        if (!email) throw createError("Email is required", 400);
+
+        const user = await User.findOneAndUpdate(
+            { email },
+            { verification: generateVerificationCode() },
+            { new: true }
+        );
+        if (!user) throw createError("User not found", 404);
+
+        //Todo send email
+
+        if (NODE_ENV === "development")
+            console.log(`Verification code: ${user.verification.code}`);
+
+        res.status(200).json({
+            success: true,
+            message: "Verification email sent successfully",
+            data: null,
+        });
+    } catch (error) {
+        console.log(
+            `[Auth.sendEmailVerificationLink] Failed to send verification link: ${error.message}`
+        );
+        next(error);
+    }
+};
+
 export const verifyEmail = async (req, res, next) => {
     const { code } = req.body;
     try {
@@ -106,16 +145,82 @@ export const verifyEmail = async (req, res, next) => {
         userToVerify.verification = undefined;
         await userToVerify.save();
 
-        await sendWelcomeEmail(userToVerify);
+        // await sendWelcomeEmail(userToVerify);
 
         res.status(200).json({
             success: true,
             message: "User verified successfully",
-            data: { id: userToVerify._id, email: userToVerify.email },
+            data: null,
         });
     } catch (error) {
         console.log(
             `[Auth.verifyEmail] Failed to verify email: ${error.message}`
+        );
+        next(error);
+    }
+};
+
+export const sendPasswordResetLink = async (req, res, next) => {
+    const { email } = req.body;
+    try {
+        if (!email) throw createError("Email is required", 400);
+
+        const user = await User.findOne({ email });
+        if (!user) throw createError("User not found", 404);
+
+        const token = generateResetToken(user._id);
+        // await sendResetPasswordEmail(user, token);
+
+        user.resetPassword = {
+            token: hashToken(token),
+            expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+        };
+        await user.save();
+
+        if (NODE_ENV === "development") console.log(`Reset token: ${token}`);
+
+        res.status(200).json({
+            success: true,
+            message: "Password reset request sent successfully",
+            data: null,
+        });
+    } catch (error) {
+        console.log(
+            `[Auth.requestResetPassword] Failed to send password reset link: ${error.message}`
+        );
+        next(error);
+    }
+};
+
+export const resetPassword = async (req, res, next) => {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    try {
+        if (!token) throw createError("Token is required");
+        if (!newPassword) throw createError("New Password is required");
+
+        const user = await User.findOneAndUpdate(
+            {
+                "resetPassword.token": hashToken(token),
+                "resetPassword.expiresAt": { $gt: new Date() },
+            },
+            {
+                password: await hashPassword(newPassword),
+                $unset: { resetPassword: "" },
+            },
+            { new: true }
+        );
+        if (!user) throw createError("The token is invalid", 400);
+
+        res.status(200).json({
+            success: true,
+            message: "Password has been reset successfully",
+            data: null,
+        });
+    } catch (error) {
+        console.log(
+            `[Auth.resetPassword] Failed to reset password: ${error.message}`
         );
         next(error);
     }

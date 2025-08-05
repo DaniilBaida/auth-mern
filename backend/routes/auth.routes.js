@@ -3,6 +3,9 @@ import {
     login,
     logout,
     register,
+    resetPassword,
+    sendEmailVerificationLink,
+    sendPasswordResetLink,
     verifyEmail,
 } from "../controllers/auth.controller.js";
 
@@ -14,6 +17,10 @@ authRouter.post("/login", login);
 
 authRouter.post("/logout", logout);
 
-authRouter.post("/verify-email", verifyEmail);
+authRouter.post("/verify-email", sendEmailVerificationLink);
+authRouter.post("/verify-email/confirm", verifyEmail);
+
+authRouter.post("/reset-password/", sendPasswordResetLink);
+authRouter.post("/reset-password/:token", resetPassword);
 
 export default authRouter;
