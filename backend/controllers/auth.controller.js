@@ -48,28 +48,28 @@ export const login = async (req, res, next) => {
         if (!email || !password)
             throw createError("All fields are required", 400);
 
-        const userToLogin = await User.findOne({ email });
-        if (!userToLogin) throw createError("Invalid credentials", 401);
+        const foundUser = await User.findOne({ email });
+        if (!foundUser) throw createError("Invalid credentials", 401);
 
         const isPasswordValid = await comparePassword(
             password,
-            userToLogin.password
+            foundUser.password
         );
 
         if (!isPasswordValid) throw createError("Invalid credentials", 401);
 
-        let token = generateToken(userToLogin._id);
+        let token = generateToken(foundUser._id);
         setCookie(res, "token", token);
 
         res.status(200).json({
             success: true,
             message: "User logged in successfully",
             data: {
-                id: userToLogin._id,
-                name: userToLogin.name,
+                id: foundUser._id,
+                name: foundUser.name,
                 email,
-                isVerified: userToLogin.isVerified,
-                lastLogin: userToLogin.lastLogin,
+                isVerified: foundUser.isVerified,
+                lastLogin: foundUser.lastLogin,
             },
         });
     } catch (error) {
