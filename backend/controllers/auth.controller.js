@@ -103,12 +103,13 @@ export const sendEmailVerificationLink = async (req, res, next) => {
     try {
         if (!email) throw createError("Email is required", 400);
 
-        const user = await User.findOneAndUpdate(
-            { email },
-            { verification: generateVerificationCode() },
-            { new: true }
-        );
+        const user = await User.findOne({ email });
         if (!user) throw createError("User not found", 404);
+
+        if (user.isVerified === true)
+            throw createError("User is verified already", 400);
+        user.verification = generateVerificationCode();
+        user.save();
 
         sendVerificationEmail(user);
         if (NODE_ENV === "development")
