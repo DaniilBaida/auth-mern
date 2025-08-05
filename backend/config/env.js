@@ -9,4 +9,5 @@ export const {
     NODE_ENV,
     MAILTRAP_TOKEN,
     FRONTEND_URL,
+    GOOGLE_APP_PASSWORD,
 } = process.env;

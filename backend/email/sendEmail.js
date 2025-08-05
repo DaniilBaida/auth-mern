@@ -1,5 +1,5 @@
 import { FRONTEND_URL } from "../config/env.js";
-import { mailtrapClient, sender } from "../config/mailtrap.js";
+import { nodemailerTransporter, sender } from "../config/nodemailer.js";
 import {
     PASSWORD_RESET_EMAIL,
     VERIFY_ACCOUNT_EMAIL,
@@ -12,14 +12,13 @@ export const sendVerificationEmail = async (user) => {
 
         if (!verificationCode) throw new Error("Verification code is missing.");
 
-        await mailtrapClient.send({
+        await nodemailerTransporter.sendMail({
             from: sender,
-            to: [{ email: user.email }],
+            to: user.email,
             subject: VERIFY_ACCOUNT_EMAIL.subject,
             html: VERIFY_ACCOUNT_EMAIL.html
                 .replace("{verificationCode}", verificationCode)
                 .replace("{userName}", user.name),
-            category: "email verification",
         });
 
         console.log("Verification email sent to: ", user.email);
@@ -30,12 +29,11 @@ export const sendVerificationEmail = async (user) => {
 };
 export const sendWelcomeEmail = async (user) => {
     try {
-        await mailtrapClient.send({
+        await nodemailerTransporter.sendMail({
             from: sender,
-            to: [{ email: user.email }],
+            to: user.email,
             subject: WELCOME_EMAIL.subject,
             html: WELCOME_EMAIL.html.replace("{userName}", user.name),
-            category: "welcome email",
         });
 
         console.log("Welcome email sent to: ", user.email);
@@ -47,9 +45,9 @@ export const sendWelcomeEmail = async (user) => {
 
 export const sendResetPasswordEmail = async (user, token) => {
     try {
-        await mailtrapClient.send({
+        await nodemailerTransporter.sendMail({
             from: sender,
-            to: [{ email: user.email }],
+            to: user.email,
             subject: PASSWORD_RESET_EMAIL.subject,
             html: PASSWORD_RESET_EMAIL.html
                 .replace("{userName}", user.name)
@@ -57,7 +55,6 @@ export const sendResetPasswordEmail = async (user, token) => {
                     "{resetLink}",
                     FRONTEND_URL && `${FRONTEND_URL}/reset-password/${token}`
                 ),
-            category: "reset password email",
         });
 
         console.log("Reset password email sent to: ", user.email);
