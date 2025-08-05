@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 
-config({ path: "./backend/.env" });
+config({ path: "./.env" });
 
 export const {
     PORT,
