@@ -56,7 +56,7 @@ export const login = async (req, res, next) => {
             userToLogin.password
         );
 
-        if (!isPasswordValid) createError("Invalid credentials", 401);
+        if (!isPasswordValid) throw createError("Invalid credentials", 401);
 
         let token = generateToken(userToLogin._id);
         setCookie(res, "token", token);
