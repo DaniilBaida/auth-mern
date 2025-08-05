@@ -5,7 +5,7 @@ import HomePage from "./pages/HomePage";
 
 function App() {
     return (
-        <div className=" min-h-screen flex justify-center items-center ">
+        <div className=" min-h-screen flex justify-center items-center bg-gray-100">
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
