@@ -1,4 +1,4 @@
-const Input = ({ icon: Icon, ...props }) => {
+const Input = ({ icon: Icon, className, ...props }) => {
     return (
         <div className="relative">
             {Icon && (
@@ -10,7 +10,7 @@ const Input = ({ icon: Icon, ...props }) => {
             <input
                 className={`${
                     Icon ? "pl-10" : "pl-4"
-                } pr-4 py-2 border border-gray-300 text-sm rounded-md w-full focus:ring focus:ring-blue-500 focus:outline-none `}
+                } pr-4 py-2 border border-gray-300 text-sm rounded-md w-full focus:ring focus:ring-blue-500 focus:outline-none ${className}`}
                 {...props}
             />
         </div>
