@@ -6,8 +6,12 @@ import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import DashboardPage from "./pages/DashboardPage";
 import ResetPassword from "./pages/ResetPassword";
+import ResetPasswordFormPage from "./pages/ResetPasswordFormPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
 import { useAuthStore } from "./store/authStore";
+import RedirectAuthenticatedUser from "./components/RedirectAuthenticatedUser";
+import ProtectedRoute from "./components/ProtectedRoute";
+import VerificationProtectedRoute from "./components/VerificationProtectedRoute";
 
 function App() {
     const { checkAuth, isCheckingAuth } = useAuthStore();
@@ -30,45 +34,72 @@ function App() {
     return (
         <>
             <Routes>
-                <Route path="/" element={<HomePage />} />
+                <Route
+                    path="/"
+                    element={
+                        <RedirectAuthenticatedUser>
+                            <HomePage />
+                        </RedirectAuthenticatedUser>
+                    }
+                />
                 <Route
                     path="/dashboard"
                     element={
-                        <div className="min-h-screen flex justify-center items-center bg-gray-100">
-                            <DashboardPage />
-                        </div>
+                        <ProtectedRoute>
+                            <div className="min-h-screen flex justify-center items-center bg-gray-100">
+                                <DashboardPage />
+                            </div>
+                        </ProtectedRoute>
                     }
                 />
                 <Route
                     path="/login"
                     element={
-                        <div className="min-h-screen flex justify-center items-center bg-gray-100">
-                            <LoginPage />
-                        </div>
+                        <RedirectAuthenticatedUser>
+                            <div className="min-h-screen flex justify-center items-center bg-gray-100">
+                                <LoginPage />
+                            </div>
+                        </RedirectAuthenticatedUser>
                     }
                 />
                 <Route
                     path="/register"
                     element={
-                        <div className="min-h-screen flex justify-center items-center bg-gray-100">
-                            <RegisterPage />
-                        </div>
+                        <RedirectAuthenticatedUser>
+                            <div className="min-h-screen flex justify-center items-center bg-gray-100">
+                                <RegisterPage />
+                            </div>
+                        </RedirectAuthenticatedUser>
                     }
                 />
                 <Route
                     path="/reset-password"
                     element={
-                        <div className="min-h-screen flex justify-center items-center bg-gray-100">
-                            <ResetPassword />
-                        </div>
+                        <RedirectAuthenticatedUser>
+                            <div className="min-h-screen flex justify-center items-center bg-gray-100">
+                                <ResetPassword />
+                            </div>
+                        </RedirectAuthenticatedUser>
+                    }
+                />
+                <Route
+                    path="/reset-password/:token"
+                    element={
+                        <RedirectAuthenticatedUser>
+                            <div className="min-h-screen flex justify-center items-center bg-gray-100">
+                                <ResetPasswordFormPage />
+                            </div>
+                        </RedirectAuthenticatedUser>
                     }
                 />
                 <Route
                     path="/verify-email"
                     element={
-                        <div className="min-h-screen flex justify-center items-center bg-gray-100">
-                            <EmailVerificationPage />
-                        </div>
+                        <VerificationProtectedRoute>
+                            <div className="min-h-screen flex justify-center items-center bg-gray-100">
+                                <EmailVerificationPage />
+                            </div>
+                        </VerificationProtectedRoute>
                     }
                 />
             </Routes>

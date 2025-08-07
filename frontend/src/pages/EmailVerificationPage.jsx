@@ -160,16 +160,6 @@ const EmailVerificationPage = () => {
                         )}
                     </Button>
                 </form>
-
-                <p className="text-center text-xs text-gray-400 mt-4">
-                    Already have an account?{" "}
-                    <Link
-                        to={"/login"}
-                        className="text-blue-800 hover:underline cursor-pointer transition"
-                    >
-                        Log In
-                    </Link>
-                </p>
             </div>
         </div>
     );

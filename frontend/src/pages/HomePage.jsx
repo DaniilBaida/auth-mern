@@ -1,18 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
 import Button from "../components/Button";
 import { ArrowRight, Shield, Zap, Users } from "lucide-react";
-import { useEffect } from "react";
 
 const HomePage = () => {
-    const { isAuthenticated } = useAuthStore();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/dashboard");
-        }
-    }, [isAuthenticated, navigate]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

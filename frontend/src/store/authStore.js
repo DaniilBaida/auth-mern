@@ -163,6 +163,58 @@ export const useAuthStore = create(
                     throw error;
                 }
             },
+
+            forgotPassword: async (email) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const response = await axios.post(
+                        `${api}/forgot-password`,
+                        {
+                            email,
+                        }
+                    );
+                    set({
+                        isLoading: false,
+                        error: null,
+                    });
+                    return response.data;
+                } catch (error) {
+                    set({
+                        error:
+                            error.response?.data?.message ||
+                            error.message ||
+                            "Error sending password reset email",
+                        isLoading: false,
+                    });
+                    throw error;
+                }
+            },
+
+            resetPassword: async (token, newPassword) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const response = await axios.post(
+                        `${api}/reset-password/${token}`,
+                        {
+                            newPassword,
+                        }
+                    );
+                    set({
+                        isLoading: false,
+                        error: null,
+                    });
+                    return response.data;
+                } catch (error) {
+                    set({
+                        error:
+                            error.response?.data?.message ||
+                            error.message ||
+                            "Error resetting password",
+                        isLoading: false,
+                    });
+                    throw error;
+                }
+            },
         }),
         {
             name: "auth-storage", // unique name
