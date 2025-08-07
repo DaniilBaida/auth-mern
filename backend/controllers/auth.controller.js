@@ -72,8 +72,10 @@ export const register = async (req, res, next) => {
             message: "User registered. Verification email sent.",
             data: {
                 id: createdUser._id,
-                name,
-                email,
+                name: createdUser.name,
+                email: createdUser.email,
+                isVerified: createdUser.isVerified,
+                lastLogin: createdUser.lastLogin,
             },
         });
     } catch (error) {
@@ -107,7 +109,7 @@ export const login = async (req, res, next) => {
             data: {
                 id: user._id,
                 name: user.name,
-                email,
+                email: user.email,
                 isVerified: user.isVerified,
                 lastLogin: user.lastLogin,
             },
@@ -124,6 +126,7 @@ export const logout = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "User logged out",
+            data: null,
         });
     } catch (error) {
         devLog(`[Auth.logout] ${error.message}`);
@@ -150,6 +153,7 @@ export const sendEmailVerificationLink = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Verification email sent",
+            data: null,
         });
     } catch (error) {
         devLog(`[Auth.sendEmailVerificationLink] ${error.message}`);
@@ -179,6 +183,13 @@ export const verifyEmail = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Email verified successfully",
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isVerified: user.isVerified,
+                lastLogin: user.lastLogin,
+            },
         });
     } catch (error) {
         devLog(`[Auth.verifyEmail] ${error.message}`);
@@ -209,6 +220,7 @@ export const sendPasswordResetLink = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Password reset email sent",
+            data: null,
         });
     } catch (error) {
         devLog(`[Auth.sendPasswordResetLink] ${error.message}`);
@@ -240,6 +252,7 @@ export const resetPassword = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Password reset successfully",
+            data: null,
         });
     } catch (error) {
         devLog(`[Auth.resetPassword] ${error.message}`);

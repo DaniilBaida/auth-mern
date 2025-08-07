@@ -1,5 +1,6 @@
 import { FRONTEND_URL } from "../config/env.js";
 import { nodemailerTransporter, sender } from "../config/nodemailer.js";
+import { devLog } from "../utils/logs.js";
 import {
     PASSWORD_RESET_EMAIL,
     PASSWORD_RESET_SUCCESS_EMAIL,
@@ -22,9 +23,9 @@ export const sendVerificationEmail = async (user) => {
                 .replace("{userName}", user.name),
         });
 
-        console.log("Verification email sent to: ", user.email);
+        devLog("Verification email sent to: ", user.email);
     } catch (error) {
-        console.error("Failed to send verification email:", error.message);
+        devLog("Failed to send verification email:", error.message);
         throw error;
     }
 };
@@ -37,9 +38,9 @@ export const sendWelcomeEmail = async (user) => {
             html: WELCOME_EMAIL.html.replace("{userName}", user.name),
         });
 
-        console.log("Welcome email sent to: ", user.email);
+        devLog("Welcome email sent to: ", user.email);
     } catch (error) {
-        console.error("Failed to send welcome email:", error.message);
+        devLog("Failed to send welcome email:", error.message);
         throw error;
     }
 };
@@ -58,9 +59,9 @@ export const sendResetPasswordEmail = async (user, token) => {
                 ),
         });
 
-        console.log("Reset password email sent to: ", user.email);
+        devLog("Reset password email sent to: ", user.email);
     } catch (error) {
-        console.error("Failed to send Reset password email:", error.message);
+        devLog("Failed to send Reset password email:", error.message);
         throw error;
     }
 };
@@ -77,12 +78,9 @@ export const sendResetPasswordSuccessEmail = async (user) => {
             ),
         });
 
-        console.log("Reset password success email sent to: ", user.email);
+        devLog("Reset password success email sent to: ", user.email);
     } catch (error) {
-        console.error(
-            "Failed to send Reset password success email:",
-            error.message
-        );
+        devLog("Failed to send Reset password success email:", error.message);
         throw error;
     }
 };

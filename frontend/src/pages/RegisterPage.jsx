@@ -1,15 +1,32 @@
-import { Lock, Mail, User } from "lucide-react";
+import { LoaderIcon, Lock, Mail, User } from "lucide-react";
 import Input from "../components/Input";
 import { useState } from "react";
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 
 const RegisterPage = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const handleRegister = (e) => {
+    const navigate = useNavigate();
+
+    const { register, isLoading } = useAuthStore();
+    const handleRegister = async (e) => {
         e.preventDefault();
+
+        try {
+            await register(name, email, password);
+            toast.success("Registration successful! Please verify your email.");
+            navigate("/verify-email");
+        } catch (error) {
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Registration failed. Please try again.";
+            toast.error(errorMessage);
+        }
     };
     return (
         <div className="max-w-md bg-white w-full rounded-xl">
@@ -62,8 +79,16 @@ const RegisterPage = () => {
                             />
                         </div>
                     </div>
-                    <Button className="mt-6" type="submit">
-                        Sign Up
+                    <Button
+                        className="mt-6 cursor-pointer"
+                        type="submit"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <LoaderIcon size={24} className="animate-spin" />
+                        ) : (
+                            "Sign Up"
+                        )}
                     </Button>
                 </form>
                 <p className="text-center text-xs text-gray-400 mt-4">

@@ -1,18 +1,55 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import { useAuthStore } from "../store/authStore";
+import { LoaderIcon } from "lucide-react";
 
 const EmailVerificationPage = () => {
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const inputRefs = useRef([]);
     const navigate = useNavigate();
+    const { verifyEmail, isLoading, user, resendVerificationCode } =
+        useAuthStore();
 
-    const verifyCode = useCallback(() => {
+    const verifyCode = useCallback(async () => {
         const verificationCode = code.join("");
-        console.log("Verification code:", verificationCode);
-        // TODO: Add API call to verify the code
-    }, [code]);
+
+        try {
+            const result = await verifyEmail(verificationCode);
+            toast.success(result.message || "Email verified successfully!");
+            navigate("/dashboard");
+        } catch (error) {
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to verify email. Please try again.";
+            toast.error(errorMessage);
+            // Clear the code inputs on error for better UX
+            setCode(["", "", "", "", "", ""]);
+            inputRefs.current[0]?.focus();
+        }
+    }, [code, verifyEmail, navigate]);
+
+    const handleResendVerificationCode = async () => {
+        if (!user?.email) {
+            toast.error("No email found. Please register again.");
+            navigate("/register");
+            return;
+        }
+
+        try {
+            const result = await resendVerificationCode(user.email);
+            toast.success(result.message || "Verification code sent!");
+        } catch (error) {
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to send verification code. Please try again.";
+            toast.error(errorMessage);
+        }
+    };
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
@@ -69,6 +106,7 @@ const EmailVerificationPage = () => {
             verifyCode();
         }
     }, [code, verifyCode]);
+
     return (
         <div className="max-w-md bg-white w-full rounded-xl">
             <div className="py-8 px-16">
@@ -77,7 +115,7 @@ const EmailVerificationPage = () => {
                         <span className="text-blue-600">Verify your email</span>
                     </h1>
                     <p className="text-center text-gray-400 mt-2">
-                        Enter the code sent to example@gmail.com
+                        Enter the code sent to {user?.email || "your email"}
                     </p>
                 </div>
 
@@ -104,9 +142,22 @@ const EmailVerificationPage = () => {
                             ))}
                         </div>
                     </div>
-
-                    <Button className="mt-6" type="submit">
-                        Verify Email
+                    <p
+                        onClick={handleResendVerificationCode}
+                        className="text-sm text-end mt-2 cursor-pointer text-blue-700 hover:underline hover:text-blue-500"
+                    >
+                        Resend Code
+                    </p>
+                    <Button
+                        className="mt-6 cursor-pointer"
+                        type="submit"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <LoaderIcon size={24} className="animate-spin" />
+                        ) : (
+                            "Verify"
+                        )}
                     </Button>
                 </form>
 

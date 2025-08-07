@@ -1,14 +1,32 @@
-import { Lock, Mail, User } from "lucide-react";
+import { LoaderIcon, Lock, Mail } from "lucide-react";
 import Input from "../components/Input";
 import { useState } from "react";
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const handleLogin = (e) => {
+    const navigate = useNavigate();
+
+    const { login, isLoading } = useAuthStore();
+
+    const handleLogin = async (e) => {
         e.preventDefault();
+
+        try {
+            await login(email, password);
+            toast.success("Login successful!");
+            navigate("/dashboard");
+        } catch (error) {
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Login failed. Please try again.";
+            toast.error(errorMessage);
+        }
     };
     return (
         <div className="max-w-md bg-white w-full rounded-xl">
@@ -57,8 +75,16 @@ const LoginPage = () => {
                             Forgot Password?
                         </Link>
                     </p>
-                    <Button className="mt-6" type="submit">
-                        Sign Up
+                    <Button
+                        className="mt-6 cursor-pointer"
+                        type="submit"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <LoaderIcon size={24} className="animate-spin" />
+                        ) : (
+                            "Log In"
+                        )}
                     </Button>
                 </form>
 
